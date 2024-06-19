@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Description: Our students from confusing-grades have finally graduated and been hired by
+%    the same company. This code (theoretically) assigns employees to projects while
+%    ensuring constraints such as skills required for projects and availability are met.
+
+% Note: This code will currently evaluate to INCOHERENT.
+% Why?: Because the question was not creating multiple answer sets, as well as having logical errors in
+% assigning the employees. As far as I could find the existing program would not produce the correct dataset.
+% This code was otherwise just tech debt, and it would have been faster to just rewrite the code, instead of 
+%  trying to recover what was existing.  Also the program was trying to look at the wrong predicate for an answer.
+
+
+
+% Change the assigned predicate to be generated using disjunction or {} = exactly one and fix the
+%    code as-needed for the correct answer to contain the following two answer-sets:
+%    {assigned(david,p1), assigned(alice,p2), assigned(charlie,p3), assigned(bob,p4), assigned(eve,p5)}
+%    {assigned(alice,p1), assigned(bob,p2), assigned(charlie,p3), assigned(david,p4), assigned(eve,p5)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+employee(alice).
+employee(bob).
+employee(charlie).
+employee(david).
+employee(eve).
+
+project(p1).
+project(p2).
+project(p3).
+project(p4).
+project(p5).
+
+
+has_skill(bob, python).
+has_skill(bob, ruby).
+has_skill(charlie, cpp).
+has_skill(alice, java).
+has_skill(alice, python).
+has_skill(david, ruby).
+has_skill(david, java).
+has_skill(eve, go).
+has_skill(alice, go).
+
+skill_required(p1, java).
+skill_required(p3, cpp).
+skill_required(p2, python).
+skill_required(p4, ruby).
+skill_required(p5, go).
+
+available(alice, p1).
+available(alice, p2).
+available(david, p1).
+available(david, p4).
+available(bob, p2).
+available(charlie, p3).
+available(eve, p5).
+
+
+
+{assigned(Person, Project)} :- employee(Person), project(Project).
+
+
+% Assigns employee to a project, if they are available, and have the skill required
+% assigned(X, P) :- employee(X), project(P), available(X, P), has_skill(X, S), skill_required(P, S).
+% :- assigned(X, P), not available(X, P).
+
+% % create a result assigned for printing
+result(X, assigned, P) :- assigned(X, P).
+
+
+% % Someone cannot be assigned if there is no knowledge of them having a skill and the skill is required
+:- assigned(X, P), not has_skill(X, S), skill_required(P, S).
+:- assigned(X, P), not project(P).
+
+% % make result if there is no knowledge of the employee being assigned to the project. ?????
+result(X, assigned, P) :-  not assigned(X, P), employee(X), project(P).
+
+
+% There can not be someone assigned to a project with a skill where there is no knowledge if they possess the skill
+:- assigned(X, P), skill_required(P, S), not has_skill(X, S).
+
+
+% People cant be assigned to multiple projects
+:- assigned(X, P1), assigned(X, P2), P1!=P2.
+:- assigned(X1, P), assigned(X2, P), X1!=X2.
+
+%  People cant be assigned to multiple projects
+:- #count{N : assigned(N, _)} != 5.
+:- #count{N : assigned(_, N)} != 5.
+
+#show assigned/2.
